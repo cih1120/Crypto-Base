@@ -5,6 +5,7 @@ export const API_URL = {
   EXCHANGE_INFO: `${BINANCE_BASE_API_URL}/exchangeInfo`,
   PRICE: `${BINANCE_BASE_API_URL}/ticker/price`,
   KLINES: `${BINANCE_BASE_API_URL}/klines`,
+  TICKER_24HR: `${BINANCE_BASE_API_URL}/ticker/24hr`,
 };
 
 export const WS_URL = {

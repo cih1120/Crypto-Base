@@ -1,22 +1,41 @@
 import { TradingStatus } from '@/types/enum';
 import { API_URL } from '@/types/api';
-
 import { request } from './index';
 
 interface IExchangeSymbol {
   symbols: {
     symbol: string;
     status: TradingStatus;
+    permissions: string[];
   }[];
 }
 
-export const getExchangeInfo = async () => {
-  const response = await request<IExchangeSymbol>(API_URL.EXCHANGE_INFO, {
-    method: 'GET',
-  });
+const popularSymbols = [
+  'BNBBTC',
+  'BTCUSDT',
+  'ETHUSDT',
+  'DOGEUSDT',
+  'SOLUSDT',
+  'ADAUSDT',
+  'XRPUSDT',
+  'DOTUSDT',
+  'LTCUSDT',
+];
 
-  // 只返回前 9 個交易對
+export const getExchangeInfo = async () => {
+  const symbolsParam = JSON.stringify(popularSymbols);
+  const response = await request<IExchangeSymbol>(
+    `${API_URL.EXCHANGE_INFO}?symbols=${encodeURIComponent(symbolsParam)}`,
+    {
+      method: 'GET',
+    }
+  );
+
+  const filteredSymbols = response.symbols.filter((symbolInfo) =>
+    popularSymbols.includes(symbolInfo.symbol)
+  );
+
   return {
-    symbols: response.symbols.slice(0, 9),
+    symbols: filteredSymbols,
   };
 };
