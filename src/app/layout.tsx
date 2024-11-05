@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import React from 'react';
 
-import GlobalError from '@/components/GlobalError';
+import ClientError from '@/components/GlobalError';
 import Provider from '@/components/Provider';
 import { cn } from '@/lib/utils';
 
@@ -41,7 +41,7 @@ export default function RootLayout({
             </Link>
           </header>
           <main className="h-full w-full">{children}</main>
-          <GlobalError />
+          <ClientError />
         </Provider>
       </body>
     </html>
