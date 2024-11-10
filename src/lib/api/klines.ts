@@ -1,7 +1,7 @@
 import { KlineInterval } from '@/types/enum';
 import { API_URL } from '@/types/api';
 
-import { request } from './index';
+import { request, IApiResponse } from './index';
 
 interface IKlinesRes extends Array<number | string> {
   [0]: number; // 開盤時間
@@ -23,7 +23,7 @@ export const getKlines = async (
   interval: KlineInterval,
   startTime?: number,
   endTime?: number
-): Promise<IKlinesRes[]> => {
+): Promise<IApiResponse<IKlinesRes[]>> => {
   const url = new URL(API_URL.KLINES);
   url.searchParams.append('symbol', symbol.toUpperCase());
   url.searchParams.append('interval', interval);

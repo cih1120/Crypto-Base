@@ -2,9 +2,11 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
+import { IApiResponse } from '@/lib/api';
+
 interface ErrorContextType {
-  error: string | null;
-  setError: (error: string | null) => void;
+  error: IApiResponse<any> | null;
+  setError: (error: IApiResponse<any> | null) => void;
 }
 
 export const ErrorContext = createContext<ErrorContextType>({
@@ -13,7 +15,7 @@ export const ErrorContext = createContext<ErrorContextType>({
 });
 
 export const ErrorProvider = ({ children }: { children: ReactNode }) => {
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<IApiResponse<any> | null>(null);
 
   return (
     <ErrorContext.Provider value={{ error, setError }}>

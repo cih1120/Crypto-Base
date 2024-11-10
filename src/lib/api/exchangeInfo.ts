@@ -24,18 +24,10 @@ const popularSymbols = [
 
 export const getExchangeInfo = async () => {
   const symbolsParam = JSON.stringify(popularSymbols);
-  const response = await request<IExchangeSymbol>(
+  return await request<IExchangeSymbol>(
     `${API_URL.EXCHANGE_INFO}?symbols=${encodeURIComponent(symbolsParam)}`,
     {
       method: 'GET',
     }
   );
-
-  const filteredSymbols = response.symbols.filter((symbolInfo) =>
-    popularSymbols.includes(symbolInfo.symbol)
-  );
-
-  return {
-    symbols: filteredSymbols,
-  };
 };

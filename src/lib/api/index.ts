@@ -7,12 +7,17 @@ export interface IFetchOption {
   next?: NextFetchRequestConfig;
   headers?: HeadersInit;
 }
+export interface IApiResponse<T> {
+  status: number;
+  message: string;
+  data: T;
+}
 
 // 封裝API請求
 export async function request<T>(
   url: string,
   options: IFetchOption
-): Promise<T> {
+): Promise<IApiResponse<T>> {
   try {
     const headers = new Headers({
       'Accept-Version': 'v1',
@@ -34,11 +39,22 @@ export async function request<T>(
     const response = await fetch(url, config);
 
     if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${response.statusText}`);
+      return {
+        status: response.status,
+        message: response.statusText,
+        data: null as T,
+      };
     }
 
-    return response.json();
+    const data = await response.json();
+
+    return {
+      status: 200,
+      message: 'success',
+      data,
+    };
   } catch (error) {
+    console.error(error);
     throw error;
   }
 }

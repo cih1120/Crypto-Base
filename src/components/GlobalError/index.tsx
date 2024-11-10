@@ -1,38 +1,46 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { useError } from '@/context/ErrorContext';
 
 import ErrorDialog from './ErrorDialog';
 
+const ErrorStrategy = {
+  '429': () => (
+    <ErrorDialog error="Too many requests. Please try again later." />
+  ),
+  '451': () => (
+    <ErrorDialog error="Your region does not support this service. Please try again later." />
+  ),
+  default: () => {
+    toast.error('An unexpected error occurred. Please try again later.');
+    return null;
+  },
+};
+
 function GlobalError() {
   const { error, setError } = useError();
+  const [result, setResult] = useState<React.ReactNode | null>(null);
 
   useEffect(() => {
     if (error) {
-      const errorMessage =
-        process.env.NODE_ENV === 'production'
-          ? error.toString()
-          : 'An unexpected error occurred. Please try again later.';
+      const statusCode = error.status?.toString() || 'default';
+      const handleError =
+        ErrorStrategy[statusCode as keyof typeof ErrorStrategy] ||
+        ErrorStrategy.default;
 
-      if (isDialogError(errorMessage)) {
-        return;
-      } else {
-        toast.error(errorMessage);
+      const newResult = handleError();
+      setResult(newResult);
+
+      if (!newResult) {
         setError(null);
       }
     }
-  }, [error]);
+  }, [error, setError]);
 
-  const isDialogError = (message: string) => {
-    return message.includes('429') || message.includes('451');
-  };
-
-  return error && isDialogError(error.toString()) ? (
-    <ErrorDialog error={error.toString()} />
-  ) : null;
+  return result;
 }
 
 export default GlobalError;

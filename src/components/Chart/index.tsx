@@ -8,6 +8,7 @@ import { useError } from '@/context/ErrorContext';
 import { Button } from '@/components/ui/button';
 import { getKlines } from '@/lib/api/klines';
 import { KlineInterval } from '@/types/enum';
+import { IApiResponse } from '@/lib/api';
 
 import { Skeleton } from '../ui/skeleton';
 
@@ -98,7 +99,11 @@ const Chart = ({ symbol }: { symbol: string }) => {
       setIsLoading(true);
       try {
         const klines = await getKlines(symbol, interval, start, end);
-        const formattedData = klines.map((kline: any) => ({
+        if (klines.status !== 200 || !klines.data) {
+          setError(klines);
+          return;
+        }
+        const formattedData = klines.data.map((kline: any) => ({
           time: kline[0] / 1000,
           open: parseFloat(kline[1]),
           high: parseFloat(kline[2]),
@@ -108,7 +113,7 @@ const Chart = ({ symbol }: { symbol: string }) => {
         setChartData(formattedData);
         setLastUpdated(DateTime.now().toFormat('yyyy-MM-dd HH:mm:ss'));
       } catch (error) {
-        setError(error as string);
+        setError(error as IApiResponse<any>);
       } finally {
         setIsLoading(false);
       }

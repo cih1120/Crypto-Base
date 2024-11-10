@@ -38,21 +38,23 @@ function CryptoPriceDisplay({
   // 初始化，獲取最新價格
   useEffect(() => {
     const fetchInitialPrices = async () => {
-      try {
-        const data = await getPrices(symbolList);
-        const formattedData = data.reduce(
-          (acc, { symbol, price }) => {
-            if (!acc[symbol]) {
-              acc[symbol] = parseFloat(price);
-            }
-            return acc;
-          },
-          { ...pricesData }
-        );
-        setPricesData(formattedData);
-      } catch (error) {
-        setError(error as string);
+      const initPrices = await getPrices(symbolList);
+
+      if (initPrices.status !== 200 || !initPrices.data) {
+        setError(initPrices);
+        return;
       }
+
+      const formattedData = initPrices.data.reduce(
+        (acc, { symbol, price }) => {
+          if (!acc[symbol]) {
+            acc[symbol] = parseFloat(price);
+          }
+          return acc;
+        },
+        { ...pricesData }
+      );
+      setPricesData(formattedData);
     };
     fetchInitialPrices();
   }, [symbolList]);
